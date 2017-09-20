@@ -1,0 +1,33 @@
+{
+  "name": "b4-custom",
+  "version": "0.0.1",
+  "description": "a bootstrap 4 customization service",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^3.5.3"
+  },
+  "dependencies": {
+    "archiver": "^2.0.3",
+    "autoprefixer": "^7.1.2",
+    "bootstrap": "^4.0.0-beta",
+    "clean-css": "^4.1.8",
+    "node-sass": "^4.5.3",
+    "postcss": "^6.0.11"
+  },
+  "browserslist": [
+    "Chrome >= 45",
+    "Firefox ESR",
+    "Edge >= 12",
+    "Explorer >= 10",
+    "iOS >= 9",
+    "Safari >= 9",
+    "Android >= 4.4",
+    "Opera >= 30"
+  ]
+}
