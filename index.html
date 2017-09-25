@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>bootstrap 4 customization service</title>
+	<meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="author" content="Sebastien DUMETZ">
+	<meta name="description" content="a free service to customize bootstrap 4 colors and features">
+	<meta http-equiv="content-language" content="en" />
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+  <script>
+    function wait(state){
+      console.log("Waiting : ",state)
+    }
+    function submitHandler(){
+      var textArea =  document.getElementById("customData");
+      wait(true);
+      console.log(textArea.value);
+      fetch("bootstrap.tar.gz",{
+        method:"POST",
+        headers:{
+          "Content-Type":"text/plain",
+          "Accept":"application/gzip"
+        },
+        body:textArea.value
+      }).then(function(r){
+        if (!r.ok){ throw new Error(r.statusText)}
+        return r.blob();
+      }).then(function(fileBlob){
+        var a = document.createElement("A");
+        var u = window.URL.createObjectURL(fileBlob);
+        a.href = u;
+        a.download = "bootstrap.tar.gz";
+        a.style = "display: none";
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(u);
+        wait(false);
+      })
+      return false;
+    }
+  </script>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-primary bg-primary">
+    <a class="navbar-brand text-light" href="#">B4 Custom</a>
+  </nav>
+  <section id="section-head" class="jumbotron jumbotron-fluid">
+    <div class="container text-dark">
+      <h1 class=""> Bootstrap 4 customization service</h1>
+      <p>Customize bootstrap's variables to your needs to get a personalized experience without the hassle of a local build system.</p>
+      <hr class="my-4">
+      <p> Available as a web user interface or in scripts</p>
+    </div>
+  </section>
+  <main id="section-main" class="container">
+    <section id="ui-use">
+      <h2>Use the User Interface</h2>
+      <p>The easiest way to begin using a custom bootstrap build is to customize variables in this form then click the <code>GET BOOTSTRAP</code> button.</p>
+      <form method="POST" onsubmit="return submitHandler()">
+        <div class="form-group">
+          <label for="customData" class="text-secondary">custom.scss</label>
+          <textarea class="form-control" id="customData" rows="5" >
+            $blue: #2fafe6;
+            $theme-colors: (
+              primary: $blue
+            );
+          </textarea>
+        </div>
+        <div class="form-group">
+          <button type="submit" title="get your very own bootstrap, customized with your data above" class="btn btn-primary btn-block">GET BOOTSTRAP</button>
+        </div>
+      </form>
+    </section>
+    <section id="script-use">
+      <h2>Use in scripts</h2>
+      <p>Create a scss file containing your custom variables. The list of customizable variables is found in <a href="https://github.com/twbs/bootstrap/blob/v4-dev/scss/_variables.scss">
+        <pre>_variables.scss</pre>
+      </a>. Don't forget to remove the <pre>!default</pre> tag.</p>
+      <p>
+        Example custom file : </p>
+      <code><pre>
+        $theme-colors: (
+          primary: $red,
+          secondary: $purple
+        );
+      </code></pre>
+      <p>Then get it with curl :</p>
+      <code><pre>
+        curl -XPOST -H "Content-Type: text/plain" -H "Accept: application/zip" --data-binary '@custom.scss' b4.holusion.com > bootstrap.tar.gz
+      </code></pre>
+    </section>
+
+  </main>
+</body>
+</html>

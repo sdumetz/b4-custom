@@ -169,12 +169,22 @@ function do_cleancss(state){
 
 function init(custom_data, filename){
   return Promise.resolve(new Item(custom_data, filename))
-
 }
 
-exports.handler = (event, context, callback) => {
+function handler(event, context, callback){
   console.log("event : ",event);
-  let custom_data = (typeof event.base64Data === "string")? Buffer.from(event.base64Data, "base64").toString("utf8") : event.bodyData;
+  let custom_data = "";
+  if (event.bodyData){ //for pre-parsed bodies, like JSON
+    custom_data = event.bodyData
+  } else if (event.base64Data){
+    custom_data = Buffer.from(event.base64Data, "base64").toString("utf8")
+  }else if( event.formData){
+    custom_data ="";
+  }
+  console.log(custom_data);
+  if (4096 < custom_data.length){
+    return callback(new Error("Custom data over size limit of 4kB"));
+  }
   custom_data = sanitize(custom_data);
   console.log("Build with data : ",custom_data);
   //TODO : compile input with node-sass to really sanitize
@@ -197,3 +207,7 @@ exports.handler = (event, context, callback) => {
     callback(e);
   })
 };
+module.exports = {
+  init: init,
+  handler: handler
+}
