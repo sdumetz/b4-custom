@@ -9,9 +9,26 @@
 	<meta http-equiv="content-language" content="en" />
 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
-  <script>
+  <script defer>
+    function progress(el,count){
+      if (count<=100){
+        el.children[0].style.width = `${count++}%`;
+        return setTimeout(progress.bind(null,el,count),100);
+      }else{
+        console.log("strip");
+        el.children[0].className = "progress-bar progress-bar-striped progress-bar-animated";
+      }
+    }
+
     function wait(state){
-      console.log("Waiting : ",state)
+      var bar = document.getElementById("dl-progress");
+      if (state){
+        bar.childNodes[0].className = "progress-bar";
+        bar.style.display = "block";
+        progress(bar,0);
+      }else{
+        bar.style.display = "none";
+      }
     }
     function submitHandler(){
       var textArea =  document.getElementById("customData");
@@ -37,7 +54,11 @@
         a.click();
         window.URL.revokeObjectURL(u);
         wait(false);
-      })
+      }).catch(function(err){
+        wait(false);
+        alert("Download failed : "+JSON.stringify(err));
+        console.warn("Download failed",err);
+      });
       return false;
     }
   </script>
@@ -72,20 +93,15 @@
           <button type="submit" title="get your very own bootstrap, customized with your data above" class="btn btn-primary btn-block">GET BOOTSTRAP</button>
         </div>
       </form>
+      <div class="progress" id="dl-progress" style="display:none;width:100%;">
+        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
     </section>
     <section id="script-use">
       <h2>Use in scripts</h2>
       <p>Create a scss file containing your custom variables. The list of customizable variables is found in <a href="https://github.com/twbs/bootstrap/blob/v4-dev/scss/_variables.scss">
-        <pre>_variables.scss</pre>
-      </a>. Don't forget to remove the <pre>!default</pre> tag.</p>
-      <p>
-        Example custom file : </p>
-      <code><pre>
-        $theme-colors: (
-          primary: $red,
-          secondary: $purple
-        );
-      </code></pre>
+        <code>_variables.scss</code>
+      </a>. Don't forget to remove the <code>!default</code> tag.</p>
       <p>Then get it with curl :</p>
       <code><pre>
         curl -XPOST -H "Content-Type: text/plain" -H "Accept: application/zip" --data-binary '@custom.scss' b4.holusion.com > bootstrap.tar.gz
@@ -93,9 +109,9 @@
     </section>
   </main>
   <footer id="section-foot" class="jumbotron jumbotron-fluid">
-    <div id="container">
+    <div class="container">
       <p>This tool distributes twitter's <a href="https://getbootstrap.com/">bootstrap</a> as permitted by the <a href="https://github.com/twbs/bootstrap/blob/master/LICENSE">MIT</a> license.</p>
-      <p>This tool is provided AS-IS without warranty of any kind. Source code is available for reuse on <a href="https://github.com/sdumetz/b4-custom">github</a></p>
+      <p>It is provided AS-IS without warranty of any kind. Source code is available for reuse on <a href="https://github.com/sdumetz/b4-custom">github</a></p>
       <p> Hosting is provided by <a href="https://holusion.com">Holusion SAS</a></p>
     </div>
   </footer>

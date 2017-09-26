@@ -204,7 +204,7 @@ function handler(event, context, callback){
     callback(null,data.toString("base64"));
   }).catch(function(e){
     console.log(e);
-    callback(e);
+    callback(new Error("Processing Error : "+e.message));
   })
 };
 module.exports = {
