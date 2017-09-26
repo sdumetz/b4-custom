@@ -171,6 +171,19 @@ function init(custom_data, filename){
   return Promise.resolve(new Item(custom_data, filename))
 }
 
+function compile(data){
+  let dataInit = init.bind(this,data);
+  return Promise.all(
+   ["bootstrap", "bootstrap-reboot", "bootstrap-grid"]
+   .map(
+     name => dataInit(name)
+     .then(do_sass)
+     .then(do_postcss)
+     .then(do_cleancss)
+   )
+ )
+}
+
 function handler(event, context, callback){
   console.log("event : ",event);
   let custom_data = "";
@@ -188,16 +201,9 @@ function handler(event, context, callback){
   custom_data = sanitize(custom_data);
   console.log("Build with data : ",custom_data);
   //TODO : compile input with node-sass to really sanitize
-  let dataInit = init.bind(this,custom_data);
-   Promise.all(
-    ["bootstrap", "bootstrap-reboot", "bootstrap-grid"]
-    .map(
-      name => dataInit(name)
-      .then(do_sass)
-      .then(do_postcss)
-      .then(do_cleancss)
-    )
-  ).then(do_finalize)
+
+  compile(custom_data)
+  .then(do_finalize)
   .then(function(){
     let data = fs.readFileSync(tmpfile);
     //fs.unlinkSync(tmpfile);
@@ -209,5 +215,6 @@ function handler(event, context, callback){
 };
 module.exports = {
   init: init,
+  compile: compile,
   handler: handler
 }
